@@ -1,21 +1,22 @@
 """Console script for {{cookiecutter.project_slug}}."""
 import {{cookiecutter.project_slug}}
 
-import typer
-from rich.console import Console
+import click
+import sys
+import logging
 
-app = typer.Typer()
-console = Console()
+_log = logging.getLogger("{{cookiecutter.project_slug}}")
 
 
-@app.command()
+@click.command()
+@click.version_option()
 def main():
     """Console script for {{cookiecutter.project_slug}}."""
-    console.print("Replace this message by putting your code into "
-               "{{cookiecutter.project_slug}}.cli.main")
-    console.print("See Typer documentation at https://typer.tiangolo.com/")
-    
+    return
+
+
 
 
 if __name__ == "__main__":
-    app()
+    logging.basicConfig()
+    sys.exit(main())

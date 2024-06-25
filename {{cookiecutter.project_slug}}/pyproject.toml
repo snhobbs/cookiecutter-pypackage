@@ -1,21 +1,24 @@
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "{{cookiecutter.project_slug}}"
 version = "{{cookiecutter.version}}"
 description = "{{cookiecutter.project_short_description}}"
 readme = "README.md"
+dynamic = ["dependencies"]
 authors = [
   {name = "{{cookiecutter.full_name}}", email = "{{cookiecutter.email}}"}
 ]
 maintainers = [
   {name = "{{cookiecutter.full_name}}", email = "{{cookiecutter.email}}"}
 ]
-classifiers = [
-
+classifiers=[
+        'Development Status :: 2 - Pre-Alpha',
+        'Intended Audience :: Developers',
+        'Natural Language :: English',
+        'Programming Language :: Python :: 3',
 ]
+requires-python = ">=3.6"
+keywords=[]
+
 [project.license]
 file="LICENSE"
 name="{{cookiecutter.open_source_license}}"
@@ -34,12 +37,18 @@ bugs = "https://github.com/{{cookiecutter.__gh_slug}}/issues"
 changelog = "https://github.com/{{cookiecutter.__gh_slug}}/blob/master/changelog.md"
 github = "https://github.com/{{cookiecutter.__gh_slug}}"
 
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where=['src']
 
 [tool.setuptools]
-package-dir = {"" = "src"}
+include-package-data = true
 
 [tool.setuptools.package-data]
-"*" = ["*.*"]
+{{cookiecutter.project_slug}} = []
 
 {% if cookiecutter.command_line_interface == 'Yes' %}
 [project.scripts]
@@ -52,9 +61,6 @@ dependencies = {file = ["requirements.txt"]}
 
 [tool.hatch.metadata]
 allow-direct-references = true
-
-[tool.setuptools.packages.find]
-where=['src']
 
 # ==== pytest ====
 [tool.pytest.ini_options]
