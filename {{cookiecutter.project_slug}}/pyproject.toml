@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "{{cookiecutter.project_slug}}"
 version = "{{cookiecutter.version}}"
 description = "{{cookiecutter.project_short_description}}"
-readme = "README.rst"
+readme = "README.md"
 authors = [
   {name = "{{cookiecutter.full_name}}", email = "{{cookiecutter.email}}"}
 ]
@@ -16,12 +16,9 @@ maintainers = [
 classifiers = [
 
 ]
-license = {text = "{{cookiecutter.open_source_license}}"}
-dependencies = [
-  {% if cookiecutter.command_line_interface.lower() == "typer" -%}
-  "typer"
-{%- endif %}
-]
+[project.license]
+file="LICENSE"
+name="{{cookiecutter.open_source_license}}"
 
 [project.optional-dependencies]
 dev = [
@@ -35,7 +32,8 @@ dev = [
 
 bugs = "https://github.com/{{cookiecutter.__gh_slug}}/issues"
 changelog = "https://github.com/{{cookiecutter.__gh_slug}}/blob/master/changelog.md"
-homepage = "https://github.com/{{cookiecutter.__gh_slug}}"
+github = "https://github.com/{{cookiecutter.__gh_slug}}"
+
 
 [tool.setuptools]
 package-dir = {"" = "src"}
@@ -49,20 +47,170 @@ package-dir = {"" = "src"}
 {% endif %}
 
 
-# Mypy
-# ----
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
 
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.setuptools.packages.find]
+where=['src']
+
+# ==== pytest ====
+[tool.pytest.ini_options]
+minversion = "6.0"
+python_files = [
+    "tests.py",
+    "test_*.py",
+]
+
+# ==== Coverage ====
+[tool.coverage.run]
+include = ["kicad_parts_placer/**"]
+omit = ["*/migrations/*", "*/tests/*"]
+
+# ==== mypy ====
 [tool.mypy]
-files = "."
-
-# Use strict defaults
-strict = true
-warn_unreachable = true
-warn_no_return = true
+python_version = "3.11"
+check_untyped_defs = true
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+plugins = [
+]
 
 [[tool.mypy.overrides]]
-# Don't require test functions to include types
-module = "tests.*"
-allow_untyped_defs = true
-disable_error_code = "attr-defined"
+ignore_errors = true
 
+
+# ==== djLint ====
+[tool.djlint]
+blank_line_after_tag = "load,extends"
+close_void_tags = true
+format_css = true
+format_js = true
+# TODO: remove T002 when fixed https://github.com/Riverside-Healthcare/djLint/issues/687
+ignore = "H006,H030,H031,T002"
+include = "H017,H035"
+indent = 2
+max_line_length = 119
+
+[tool.djlint.css]
+indent_size = 2
+
+[tool.djlint.js]
+indent_size = 2
+
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    "*/migrations/*.py",
+    "staticfiles/*"
+]
+line-length = 88
+indent-width = 4
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+  "F",
+  "E",
+  "W",
+  "C90",
+  "I",
+  "N",
+  "UP",
+  "YTT",
+  # "ANN", # flake8-annotations: we should support this in the future but 100+ errors atm
+  "ASYNC",
+  "S",
+  "BLE",
+  "FBT",
+  "B",
+  "A",
+  "COM",
+  "C4",
+  "DTZ",
+  "T10",
+  "DJ",
+  "EM",
+  "EXE",
+  "FA",
+  'ISC',
+  "ICN",
+  "G",
+  'INP',
+  'PIE',
+  "T20",
+  'PYI',
+  'PT',
+  "Q",
+  "RSE",
+  "RET",
+  "SLF",
+  "SLOT",
+  "SIM",
+  "TID",
+  "TCH",
+  "INT",
+  # "ARG", # Unused function argument
+  "PTH",
+  "ERA",
+  "PD",
+  "PGH",
+  "PL",
+  "TRY",
+  "FLY",
+  # "NPY",
+  # "AIR",
+  "PERF",
+  # "FURB",
+  # "LOG",
+  "RUF"
+]
+ignore = [
+  "S101", # Use of assert detected https://docs.astral.sh/ruff/rules/assert/
+  "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
+  "SIM102", # sometimes it's better to nest
+  "COM812", # missing-trailing-comma recommended to remove
+  "ISC001", # single-line-implicit-string-concatenation recommended to remove
+  "E501",   # line too long
+  "PD901",  # generic names
+  "ERA001", # commented out code
+]
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint.isort]
+force-single-line = true
